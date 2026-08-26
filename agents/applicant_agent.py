@@ -91,7 +91,7 @@ in an intelligent loan approval system.
 
 Analyze this loan application:
 
-{json.dumps(application.model_dump(), indent=2)}
+{json.dumps(application, indent=2)}
 
 Evaluate:
 

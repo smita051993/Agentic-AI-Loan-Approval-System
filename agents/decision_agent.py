@@ -38,7 +38,7 @@ Your responsibility is to synthesize the
 outputs from the Applicant Profile Agent
 and Financial Risk Agent.
 Original Loan Application:
-{json.dumps(application.model_dump(), indent=2)}
+{json.dumps(application, indent=2)}
 Applicant Profile:
 {json.dumps(applicant_profile.model_dump(), indent=2)}
 Financial Risk:
@@ -74,47 +74,47 @@ Do not use ```json.
    return validated_result
 
 
-# TESTING- TEMPORARY ADD
+# # TESTING- TEMPORARY ADD
 
-if __name__ == "__main__":
-   from applicant_agent import (
-       application,
-       analyze_applicant
-   )
-   from financial_risk_agent import (
-       analyze_financial_risk
-   )
-   # Agent 1
-   applicant_profile = analyze_applicant(application)
+# if __name__ == "__main__":
+#    from applicant_agent import (
+#        application,
+#        analyze_applicant
+#    )
+#    from financial_risk_agent import (
+#        analyze_financial_risk
+#    )
+#    # Agent 1
+#    applicant_profile = analyze_applicant(application)
    
 
-   # Agent 2
-   financial_risk = analyze_financial_risk(
-       application,
-       applicant_profile
-   )
+#    # Agent 2
+#    financial_risk = analyze_financial_risk(
+#        application,
+#        applicant_profile
+#    )
 
 
-   # Agent 3
-   decision = make_loan_decision(
-       application,
-       applicant_profile,
-       financial_risk
-   )
-   print("\n========== APPLICANT PROFILE ==========")
-print(f"Income Stability : {applicant_profile.income_stability_score}")
-print(f"Employment Risk  : {applicant_profile.employment_risk}")
-print(f"Credit Score     : {application.credit_score}")
-print(f"Application      : {'COMPLETE' if applicant_profile.application_complete else 'INCOMPLETE'}")
+#    # Agent 3
+#    decision = make_loan_decision(
+#        application,
+#        applicant_profile,
+#        financial_risk
+#    )
+#    print("\n========== APPLICANT PROFILE ==========")
+# print(f"Income Stability : {applicant_profile.income_stability_score}")
+# print(f"Employment Risk  : {applicant_profile.employment_risk}")
+# print(f"Credit Score     : {application.credit_score}")
+# print(f"Application      : {'COMPLETE' if applicant_profile.application_complete else 'INCOMPLETE'}")
 
-print("\n========== FINANCIAL RISK ==========")
-print(f"Debt-to-Income   : {financial_risk.debt_to_income_ratio:.1%}")
-print(f"Credit Risk      : {financial_risk.credit_score_risk}")
-print(f"Loan Amount Risk : {financial_risk.loan_amount_risk}")
-print(f"Anomaly          : {financial_risk.anomaly_detected}")
+# print("\n========== FINANCIAL RISK ==========")
+# print(f"Debt-to-Income   : {financial_risk.debt_to_income_ratio:.1%}")
+# print(f"Credit Risk      : {financial_risk.credit_score_risk}")
+# print(f"Loan Amount Risk : {financial_risk.loan_amount_risk}")
+# print(f"Anomaly          : {financial_risk.anomaly_detected}")
 
-print("\n========== LOAN DECISION ==========")
-print(f"Decision         : {decision.classification}")
-print(f"Risk Score       : {decision.risk_score}")
-print(f"Confidence       : {decision.confidence_level:.0%}")
-print(f"Reason           : {decision.explanation}")
+# print("\n========== LOAN DECISION ==========")
+# print(f"Decision         : {decision.classification}")
+# print(f"Risk Score       : {decision.risk_score}")
+# print(f"Confidence       : {decision.confidence_level:.0%}")
+# print(f"Reason           : {decision.explanation}")

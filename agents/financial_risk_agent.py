@@ -65,7 +65,7 @@ Analyze the financial risk of the applicant.
 
 Loan Application:
 
-{json.dumps(application.model_dump(), indent=2)}
+{json.dumps(application, indent=2)}
 
 Applicant Profile Analysis:
 
