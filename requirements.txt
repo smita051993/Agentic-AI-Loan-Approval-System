@@ -6,3 +6,5 @@ mcp[cli]
 uv
 fastapi
 uvicorn
+streamlit
+requests
