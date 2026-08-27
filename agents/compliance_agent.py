@@ -52,16 +52,28 @@ async def compliance_agent(state):
             "compliance_result": compliance_check
         }
 
-    # Check compliance
+        # Check compliance
     is_compliant = (
         compliance_check["kyc_verified"]
         and not compliance_check["blacklisted"]
         and compliance_check["documents_complete"]
     )
 
+    if is_compliant:
+        action_taken = "APPROVED"
+        notification_sent = True
+        case_id = None
+    else:
+        action_taken = "MANUAL_REVIEW"
+        notification_sent = True
+        case_id = f"CASE-{applicant_id}"
+
     compliance_result = {
         "compliance_check": compliance_check,
-        "compliance_status": "PASS" if is_compliant else "FAIL"
+        "compliance_status": "PASS" if is_compliant else "FAIL",
+        "action_taken": action_taken,
+        "notification_sent": notification_sent,
+        "case_id": case_id
     }
 
     print("\n[Compliance Agent] Completed")

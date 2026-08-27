@@ -115,7 +115,7 @@ with col1:
 
     applicant_id = st.text_input(
         "Applicant ID",
-        "APP001"
+        "AP001"
     )
 
     name = st.text_input(
@@ -701,8 +701,8 @@ if st.button(
             # You can uncomment it if evaluator wants
             # to see the complete LangGraph response.
 
-            # with st.expander("View Complete API Response"):
-            #     st.json(result)
+            with st.expander("View Complete API Response"):
+                st.json(result)
 
 
         # ==================================================
