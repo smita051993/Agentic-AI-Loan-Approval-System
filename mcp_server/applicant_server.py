@@ -1,11 +1,11 @@
 from mcp.server import MCPServer
 mcp = MCPServer("ApplicantDB")
 APPLICANTS = {
-    "APP001": {"name": "John Doe","age": 35,"income": 85000,
+    "AP001": {"name": "John Doe","age": 35,"income": 85000,
         "employment_type": "FULL_TIME","credit_score": 720
     },
 
-    "APP002": {
+    "AP002": {
 
         "name": "Jane Smith",
         "age": 29, "income": 45000, "employment_type": "CONTRACT", "credit_score": 650
