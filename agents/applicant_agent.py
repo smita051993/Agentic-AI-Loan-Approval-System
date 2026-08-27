@@ -184,10 +184,10 @@ import os
 import json
 import asyncio
 from dotenv import load_dotenv
-from anthropic import Anthropic
-from pydantic import BaseModel
+from anthropic import AsyncAnthropic
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
+from models.schemas import ApplicantProfileResult
 
 # --------------------------------------------------
 # Load environment variables
@@ -197,18 +197,18 @@ load_dotenv(override=True)
 # --------------------------------------------------
 # Applicant Models
 # --------------------------------------------------
-class ApplicantProfileResult(BaseModel):
-   income_stability_score: int
-   employment_risk: str
-   credit_history_summary: str
-   application_complete: bool
-   risk_score: int
-   rationale: str
+# class ApplicantProfileResult(BaseModel):
+#    income_stability_score: int
+#    employment_risk: str
+#    credit_history_summary: str
+#    application_complete: bool
+#    risk_score: int
+#    rationale: str
 
 # --------------------------------------------------
 # Claude Client
 # --------------------------------------------------
-client = Anthropic(
+client = AsyncAnthropic(
    api_key=os.getenv("ANTHROPIC_API_KEY")
 )
 
@@ -276,7 +276,7 @@ async def analyze_applicant(state):
    # --------------------------------------------------
    # 6. Call Claude
    # --------------------------------------------------
-   result = client.messages.create(
+   result = await client.messages.create(
                  model="claude-sonnet-4-6",
                  max_tokens=500,
                  messages=[
@@ -363,10 +363,10 @@ async def analyze_applicant(state):
 # --------------------------------------------------
 # Run
 # --------------------------------------------------
-if __name__ == "__main__":
-   result = asyncio.run(
-       analyze_applicant()
-   )
-   print("\n===== APPLICANT PROFILE AGENT RESULT =====")
-   print(result.model_dump_json(indent=2))
+# if __name__ == "__main__":
+#    result = asyncio.run(
+#        analyze_applicant()
+#    )
+#    print("\n===== APPLICANT PROFILE AGENT RESULT =====")
+#    print(result.model_dump_json(indent=2))
  
