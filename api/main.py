@@ -1,19 +1,11 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from orchestration.graph import loan_graph
+from models.schemas import LoanApplication
 app = FastAPI(
    title="Agentic AI Loan Approval System"
 )
 
-class LoanApplication(BaseModel):
-   applicant_id: str
-   name: str
-   age: int
-   income: float
-   credit_score: int
-   employment_type: str
-   loan_amount: float
-   debt_obligations: float
 
 @app.get("/")
 def home():

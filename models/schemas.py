@@ -1,18 +1,23 @@
 from pydantic import BaseModel
 
 class LoanApplication(BaseModel):
+   applicant_id: str
    name: str
    age: int
    annual_income: float
    employment_type: str
+   credit_score: int
    loan_amount: float
    loan_term: int
-   credit_score: int
+   existing_liabilities: float
+   location: str
+   application_timestamp: str
 
 class ApplicantProfileResult(BaseModel):
    income_stability_score: float
    employment_risk: str
    credit_history_summary: str
+   application_complete: bool
    risk_score: float
    rationale: str
 

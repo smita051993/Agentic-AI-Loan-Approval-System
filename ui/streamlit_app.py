@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+from datetime import datetime
 
 API_URL = "http://localhost:8000/loan/apply"
 
@@ -200,18 +201,18 @@ if st.button(
     # --------------------------------------------------
 
     application = {
-        "applicant_id": applicant_id,
-        "name": name,
-        "age": age,
-        "income": income,
-        "credit_score": credit_score,
-        "employment_type": employment_type,
-        "loan_amount": loan_amount,
-        "loan_tenure": loan_tenure,
-        "debt_obligations": debt_obligations,
-        "location": location
-    }
-
+   "applicant_id": applicant_id,
+   "name": name,
+   "age": age,
+   "annual_income": income,
+   "employment_type": employment_type,
+   "credit_score": credit_score,
+   "loan_amount": loan_amount,
+   "loan_term": loan_tenure,
+   "existing_liabilities": debt_obligations,
+   "location": location,
+   "application_timestamp": datetime.now().isoformat()
+}
 
     # --------------------------------------------------
     # PROCESS APPLICATION
