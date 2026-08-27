@@ -58,10 +58,9 @@ async def compliance_agent(state):
         and not compliance_check["blacklisted"]
         and compliance_check["documents_complete"]
     )
-
     if is_compliant:
-        action_taken = "APPROVED"
-        notification_sent = True
+        action_taken = "NO_ACTION"
+        notification_sent = False
         case_id = None
     else:
         action_taken = "MANUAL_REVIEW"
