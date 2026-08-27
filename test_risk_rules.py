@@ -17,6 +17,7 @@ async def main():
 
             await session.initialize()
 
+            # See available tools
             tools = await session.list_tools()
 
             print("Available tools:")
@@ -24,12 +25,13 @@ async def main():
             for tool in tools.tools:
                 print(tool.name)
 
+            # Call risk rules tool
             result = await session.call_tool(
                 "get_risk_rules",
                 arguments={}
             )
 
-            print("Result:")
+            print("\nRisk Rules Result:")
             print(result)
 
 

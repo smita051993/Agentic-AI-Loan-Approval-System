@@ -52,13 +52,35 @@ async def main():
    result = await loan_graph.ainvoke({
        "application": application
    })
+#    print("\nApplicant Profile:")
+#    print(result["applicant_profile"])
+#    print("\nFinancial Risk:")
+#    print(result["financial_risk"])
+#    print("\nDecision:")
+#    print(result["decision"])
+#    print("\nCompliance:")
+#    print(result["compliance_result"])
+
+#    result = await loan_graph.ainvoke({
+#     "application": application
+# })
+
+   print("\n==============================")
+   print("FINAL LOAN APPROVAL RESULT")
+   print("==============================")
+
    print("\nApplicant Profile:")
    print(result["applicant_profile"])
+
    print("\nFinancial Risk:")
    print(result["financial_risk"])
-   print("\nDecision:")
+
+   print("\nLoan Decision:")
    print(result["decision"])
+
    print("\nCompliance:")
    print(result["compliance_result"])
+
+   print("\n==============================")
 
 asyncio.run(main())
