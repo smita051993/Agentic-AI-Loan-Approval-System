@@ -1,104 +1,125 @@
-import os
 import json
-from dotenv import load_dotenv
-from anthropic import Anthropic
+
+from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import stdio_client
+
 from models.schemas import LoanDecisionResult
 
 
-# ---------------------------------------
-# Claude Configuration
-# ---------------------------------------
-load_dotenv(override=True)
-api_key = os.getenv("ANTHROPIC_API_KEY")
-if not api_key:
-   raise ValueError("ANTHROPIC_API_KEY not found")
-client = Anthropic(api_key=api_key)
-
-# ---------------------------------------
-# Decision Agent
-# ---------------------------------------
-def make_loan_decision(
-   application,
-   applicant_profile,
-   financial_risk
+async def make_loan_decision(
+    application,
+    applicant_profile,
+    financial_risk,
+    compliance_result
 ):
-   prompt = f"""
-You are the Loan Decision Agent
-in an intelligent loan approval system.
+    """
+    Decision Agent
 
-Your responsibility is to synthesize the
-outputs from the Applicant Profile Agent
-and Financial Risk Agent.
+    Calls Decision Synthesis MCP Server to generate
+    the final loan decision.
+    """
 
-Original Loan Application:
+    # -------------------------------------------------
+    # Convert application to dictionary
+    # -------------------------------------------------
 
-{json.dumps(application, indent=2)}
+    if hasattr(application, "model_dump"):
+        application_data = application.model_dump()
+    else:
+        application_data = application
 
-Applicant Profile:
+    # -------------------------------------------------
+    # Convert applicant profile to dictionary
+    # -------------------------------------------------
 
-{json.dumps(
-    applicant_profile.model_dump(),
-    indent=2
-)}
+    if hasattr(applicant_profile, "model_dump"):
+        applicant_profile_data = applicant_profile.model_dump()
+    else:
+        applicant_profile_data = applicant_profile
 
-Financial Risk:
+    # -------------------------------------------------
+    # Convert financial risk to dictionary
+    # -------------------------------------------------
 
-{json.dumps(
-    financial_risk.model_dump(),
-    indent=2
-)}
+    if hasattr(financial_risk, "model_dump"):
+        financial_risk_data = financial_risk.model_dump()
+    else:
+        financial_risk_data = financial_risk
 
+    # -------------------------------------------------
+    # Compliance result is normally a dictionary
+    # -------------------------------------------------
 
-Based ONLY on the information provided above:
+    if hasattr(compliance_result, "model_dump"):
+        compliance_data = compliance_result.model_dump()
+    else:
+        compliance_data = compliance_result
 
-Classify the application as exactly ONE of:
+    # -------------------------------------------------
+    # Extract required values
+    # -------------------------------------------------
 
-APPROVE
-REJECT
-REVIEW
+    credit_score = int(application_data["credit_score"])
 
+    risk_score = int(financial_risk_data["risk_score"])
 
-Return:
+    compliance_check = compliance_data.get(
+        "compliance_check",
+        compliance_data
+    )
 
-1. classification
-2. risk_score from 0 to 100
-3. confidence_level from 0 to 1
-4. key_decision_factors
-5. explanation
+    compliance_ok = (
+        compliance_check.get("kyc_verified", False)
+        and not compliance_check.get("blacklisted", True)
+        and compliance_check.get("documents_complete", False)
+    )
 
+    # -------------------------------------------------
+    # Start Decision Synthesis MCP Server
+    # -------------------------------------------------
 
-Do not invent information.
+    server_params = StdioServerParameters(
+        command="python",
+        args=["mcp_server/decision_synthesis_server.py"],
+    )
 
-Return ONLY valid JSON.
+    # -------------------------------------------------
+    # Connect to MCP server
+    # -------------------------------------------------
 
-Do not use markdown.
-Do not use ```json.
+    async with stdio_client(server_params) as (read, write):
 
-Return exactly this structure:
+        async with ClientSession(read, write) as session:
 
-{{
-    "classification": "APPROVE",
-    "risk_score": 25,
-    "confidence_level": 0.90,
-    "key_decision_factors": [
-        "Stable employment",
-        "Good credit score",
-        "Low debt-to-income ratio"
-    ],
-    "explanation": "The application presents low financial risk based on the available applicant and financial information."
-}}
-"""
+            await session.initialize()
 
-   response = client.messages.create(
-       model="claude-sonnet-4-6",
-       max_tokens=800,
-       messages=[
-           {
-               "role": "user",
-               "content": prompt
-           }
-       ]
-   )
-   result = response.content[0].text.strip()
-   validated_result = LoanDecisionResult.model_validate_json(result)
-   return validated_result
+            # -------------------------------------------------
+            # Call Decision Synthesis MCP Tool
+            # -------------------------------------------------
+
+            result = await session.call_tool(
+                "make_loan_decision",
+                arguments={
+                    "risk_score": risk_score,
+                    "compliance_ok": compliance_ok,
+                    "credit_score": credit_score,
+                },
+            )
+
+    # -------------------------------------------------
+    # Extract MCP response
+    # -------------------------------------------------
+
+    mcp_text = result.content[0].text
+
+    decision_data = json.loads(mcp_text)
+
+    # -------------------------------------------------
+    # Validate using Pydantic schema
+    # -------------------------------------------------
+
+    validated_result = LoanDecisionResult.model_validate(
+        decision_data
+    )
+
+    return validated_result

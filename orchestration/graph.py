@@ -47,16 +47,12 @@ async def financial_risk_node(state: LoanState):
 # ============================================================
 # Decision Agent Node
 # ============================================================
-def decision_node(state: LoanState):
-
-    application = state["application"]
-    applicant_profile = state["applicant_profile"]
-    financial_risk = state["financial_risk"]
-
-    result = make_loan_decision(
-        application,
-        applicant_profile,
-        financial_risk
+async def decision_node(state):
+    result = await make_loan_decision(
+        application=state["application"],
+        applicant_profile=state["applicant_profile"],
+        financial_risk=state["financial_risk"],
+        compliance_result=state["compliance_result"]
     )
 
     print("\n[Decision Node] Completed")
@@ -65,6 +61,8 @@ def decision_node(state: LoanState):
     return {
         "decision": result
     }
+
+   
 
 
 # ============================================================
@@ -109,16 +107,15 @@ builder.add_edge(
 
 builder.add_edge(
     "financial_risk",
+    "compliance"
+)
+builder.add_edge(
+    "compliance",
     "decision"
 )
 
 builder.add_edge(
     "decision",
-    "compliance"
-)
-
-builder.add_edge(
-    "compliance",
     END
 )
 

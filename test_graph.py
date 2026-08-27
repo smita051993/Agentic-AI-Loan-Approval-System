@@ -75,11 +75,13 @@ async def main():
    print("\nFinancial Risk:")
    print(result["financial_risk"])
 
+   print("\nCompliance:")
+   print(result["compliance_result"])
+
+
    print("\nLoan Decision:")
    print(result["decision"])
 
-   print("\nCompliance:")
-   print(result["compliance_result"])
 
    print("\n==============================")
 

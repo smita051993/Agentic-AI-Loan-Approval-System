@@ -1,7 +1,4 @@
-import asyncio
 import json
-import uuid
-from datetime import datetime
 
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
@@ -16,7 +13,6 @@ async def compliance_agent(state):
     """
 
     application = state["application"]
-    decision = state["decision"]
 
     # Get applicant ID
     if isinstance(application, dict):
@@ -56,10 +52,6 @@ async def compliance_agent(state):
             "compliance_result": compliance_check
         }
 
-    # Generate case information
-    case_id = f"CASE-{uuid.uuid4().hex[:8].upper()}"
-    timestamp = datetime.now().isoformat()
-
     # Check compliance
     is_compliant = (
         compliance_check["kyc_verified"]
@@ -67,44 +59,13 @@ async def compliance_agent(state):
         and compliance_check["documents_complete"]
     )
 
-    # Decide final action
-    if is_compliant and decision.classification == "APPROVE":
-
-        action_taken = "Loan application approved"
-        notification_sent = True
-
-    elif not is_compliant:
-
-        action_taken = "Loan application rejected due to compliance failure"
-        notification_sent = True
-
-    elif decision.classification == "REJECT":
-
-        action_taken = "Loan application rejected"
-        notification_sent = True
-
-    else:
-
-        action_taken = "Loan application sent for manual review"
-        notification_sent = True
-
-    # Create summary
-    summary = (
-        f"Loan application {decision.classification}. "
-        f"Compliance status: {'PASS' if is_compliant else 'FAIL'}. "
-        f"Action taken: {action_taken}. "
-        f"Case ID: {case_id}."
-    )
-
     compliance_result = {
         "compliance_check": compliance_check,
-        "compliance_status": "PASS" if is_compliant else "FAIL",
-        "action_taken": action_taken,
-        "notification_sent": notification_sent,
-        "case_id": case_id,
-        "timestamp": timestamp,
-        "summary": summary,
+        "compliance_status": "PASS" if is_compliant else "FAIL"
     }
+
+    print("\n[Compliance Agent] Completed")
+    print("Compliance Result:", compliance_result)
 
     return {
         "compliance_result": compliance_result
