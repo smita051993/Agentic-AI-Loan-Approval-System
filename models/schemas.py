@@ -17,13 +17,17 @@ class ApplicantProfileResult(BaseModel):
    rationale: str
 
 class FinancialRiskResult(BaseModel):
-   risk_score: float
-   debt_to_income_ratio: float
-   risk_level: str
-   rationale: str
+    debt_to_income_ratio: float
+    credit_score_risk: str
+    loan_amount_risk: str
+    anomaly_detected: bool
+    risk_score: int
+    risk_level: str
+    reasoning: str
 
 class LoanDecisionResult(BaseModel):
    classification: str
-   risk_score: float
+   risk_score: int
    confidence_level: float
+   key_decision_factors: list[str]
    explanation: str

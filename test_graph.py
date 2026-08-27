@@ -18,7 +18,7 @@ from orchestration.graph import loan_graph
 #    "employment_status": "employed"
 # }
 application = {
-   "applicant_id": "APP001",
+   "applicant_id": "AP002",
    "name": "High Risk Applicant",
    "age": 35,
    "annual_income": 30000,

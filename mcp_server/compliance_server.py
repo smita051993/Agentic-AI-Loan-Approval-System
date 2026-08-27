@@ -1,5 +1,5 @@
-from mcp.server import MCPServer
-mcp = MCPServer("ComplianceDB")
+from mcp.server.mcpserver import MCPServer
+mcp = MCPServer("NotificationSystem")
 
 COMPLIANCE_RULES = {
    "AP001": {

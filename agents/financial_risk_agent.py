@@ -1,12 +1,9 @@
 import os
-
 import json
-
 from dotenv import load_dotenv
-
 from anthropic import Anthropic
-
 from pydantic import BaseModel
+from models.schemas import FinancialRiskResult
 
 
 # -----------------------------
@@ -15,21 +12,15 @@ from pydantic import BaseModel
 
 # -----------------------------
 
-class FinancialRiskResult(BaseModel):
-
-    debt_to_income_ratio: float
-
-    credit_score_risk: str
-
-    loan_amount_risk: str
-
-    anomaly_detected: bool
-
-    risk_score: int
-
-    reasoning: str
-
-
+# class FinancialRiskResult(BaseModel):
+#     debt_to_income_ratio: float
+#     credit_score_risk: str
+#     loan_amount_risk: str
+#     anomaly_detected: bool
+#     risk_score: int
+#     risk_level: str
+#     reasoning: str
+    
 # -----------------------------
 
 # Claude Configuration
@@ -108,6 +99,8 @@ Return exactly:
     "anomaly_detected": false,
 
     "risk_score": 25,
+
+    "risk_level": "LOW",
 
     "reasoning": "..."
 
