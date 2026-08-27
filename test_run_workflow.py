@@ -6,7 +6,7 @@ def main():
    # Sample Loan Application
    # -----------------------------
    application = {
-       "applicant_id": "APP1001",
+       "applicant_id": "AP001",
        "age": 32,
        "income": 80000,
        "employment_type": "Salaried",
