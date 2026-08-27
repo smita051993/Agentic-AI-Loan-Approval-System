@@ -1,13 +1,47 @@
 import asyncio
 from orchestration.graph import loan_graph
 
+# application = {
+#    "name": "Low Risk Applicant",
+#    "age": 35,
+#    "annual_income": 100000,
+#    "credit_score": 720,
+#    "loan_amount": 20000,
+#    "employment_status": "employed"
+# }
+# application = {
+#    "name": "Medium Risk Applicant",
+#    "age": 35,
+#    "annual_income": 45000,
+#    "credit_score": 680,
+#    "loan_amount": 30000,
+#    "employment_status": "employed"
+# }
+# application = {
+#    "name": "High Risk Applicant",
+#    "age": 35,
+#    "annual_income": 30000,
+#    "credit_score": 550,
+#    "loan_amount": 50000,
+#    "employment_status": "employed"
+# }
+# application = {
+#    "name": "Approved Applicant",
+#    "age": 35,
+#    "annual_income": 85000,
+#    "credit_score": 720,
+#    "loan_amount": 15000,
+#    "employment_status": "employed"
+# }
 application = {
-   "name": "Jane Smith",
-   "age": 29,
-   "annual_income": 45000,
+   "applicant_id": "APP001",
+   "name": "John Doe",
+   "age": 35,
+   "income": 85000,
    "credit_score": 720,
-   "loan_amount": 20000,
-   "employment_status": "employed"
+   "employment_type": "PERMANENT",
+   "loan_amount": 30000,
+   "debt_obligations": 5000
 }
 
 

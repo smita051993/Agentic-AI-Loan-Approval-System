@@ -215,7 +215,7 @@ client = Anthropic(
 # --------------------------------------------------
 # Applicant Agent
 # --------------------------------------------------
-async def analyze_applicant():
+async def analyze_applicant(state):
    # --------------------------------------------------
    # 1. Start Applicant MCP Server
    # --------------------------------------------------
@@ -234,12 +234,14 @@ async def analyze_applicant():
            # --------------------------------------------------
            # 3. Call MCP Tool
            # --------------------------------------------------
+           application = state["application"]
            response = await session.call_tool(
-                "get_applicant",
-                 {
-                    "applicant_id": "APP002"
-                 }
-            )
+            "get_applicant",
+            arguments={
+               "applicant_id": application["applicant_id"]
+            }
+         )
+           
            # --------------------------------------------------
            # 4. Extract Applicant Data
            # --------------------------------------------------

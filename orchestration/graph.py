@@ -9,7 +9,7 @@ from agents.compliance_agent import compliance_agent
 # ============================================================
 async def applicant_node(state: LoanState):
    # application = state["application"]
-   result = await analyze_applicant()
+   result = await analyze_applicant(state)
    return {
        "applicant_profile": result
    }
