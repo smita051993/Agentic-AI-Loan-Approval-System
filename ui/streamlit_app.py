@@ -39,15 +39,17 @@ if st.button("Submit Application"):
         "debt_obligations": debt_obligations
     }
 
-    st.subheader("Application Submitted")
+    st.subheader("Application Details")
     st.json(application)
 
     # Send application to FastAPI
     try:
-        response = requests.post(
+        with st.spinner("⏳ Processing your loan application... Please wait"):
+
+            response = requests.post(
             API_URL,
             json=application
-        )
+            )
 
         if response.status_code == 200:
             result = response.json()
@@ -185,8 +187,8 @@ if st.button("Submit Application"):
             # RAW RESPONSE
             # -----------------------------
 
-            with st.expander(" View Complete API Response"):
-                st.json(result)
+            # with st.expander(" View Complete API Response"):
+            #     st.json(result)
 
         else:
             st.error(
