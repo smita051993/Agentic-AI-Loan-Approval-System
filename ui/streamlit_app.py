@@ -1,6 +1,9 @@
 import streamlit as st
 import requests
 
+API_URL = "http://localhost:8000/loan/apply"
+ 
+
 st.set_page_config( page_title="Agentic AI Loan Approval System", 
                    page_icon="", layout="centered" )
 
@@ -42,7 +45,7 @@ if st.button("Submit Application"):
     # Send application to FastAPI
     try:
         response = requests.post(
-            "http://127.0.0.1:8000/loan/apply",
+            API_URL,
             json=application
         )
 
@@ -51,8 +54,139 @@ if st.button("Submit Application"):
 
             st.success("Loan application processed successfully!")
 
-            st.subheader("AI Loan Decision")
-            st.json(result)
+            # Get LangGraph result
+            data = result.get("result", {})
+
+            # Get individual sections
+            application_data = data.get("application", {})
+            applicant_profile = data.get("applicant_profile", {})
+            financial_risk = data.get("financial_risk", {})
+            decision = data.get("decision", {})
+            compliance = data.get("compliance_result", {})
+
+            # -----------------------------
+            # AI LOAN DECISION
+            # -----------------------------
+
+            st.header(" AI Loan Decision")
+
+            classification = decision.get("classification", "N/A")
+            risk_score = decision.get("risk_score", "N/A")
+            confidence = decision.get("confidence_level", 0)
+
+            # Decision
+            if classification == "APPROVE":
+                st.success(f" {classification}")
+            elif classification == "REJECT":
+                st.error(f" {classification}")
+            else:
+                st.warning(f" {classification}")
+
+            # Metrics
+            col1, col2, col3 = st.columns(3)
+
+            with col1:
+                st.metric("Risk Score", risk_score)
+
+            with col2:
+                st.metric("Confidence", f"{confidence * 100:.0f}%")
+
+            with col3:
+                st.metric(
+                    "Employment",
+                    application_data.get("employment_type", "N/A")
+                )
+
+            # -----------------------------
+            # APPLICANT INFORMATION
+            # -----------------------------
+
+            st.subheader(" Applicant Information")
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.write(
+                    f"**Applicant ID:** "
+                    f"{application_data.get('applicant_id', 'N/A')}"
+                )
+
+                st.write(
+                    f"**Name:** "
+                    f"{application_data.get('name', 'N/A')}"
+                )
+
+                st.write(
+                    f"**Age:** "
+                    f"{application_data.get('age', 'N/A')}"
+                )
+
+            with col2:
+                st.write(
+                    f"**Income:** "
+                    f"₹{application_data.get('income', 0):,.0f}"
+                )
+
+                st.write(
+                    f"**Loan Amount:** "
+                    f"₹{application_data.get('loan_amount', 0):,.0f}"
+                )
+
+                st.write(
+                    f"**Debt Obligations:** "
+                    f"₹{application_data.get('debt_obligations', 0):,.0f}"
+                )
+
+            # -----------------------------
+            # FINANCIAL RISK
+            # -----------------------------
+
+            st.subheader("📊 Financial Risk Assessment")
+
+            risk_level = financial_risk.get(
+                "risk_level",
+                financial_risk.get("risk", "N/A")
+            )
+
+            st.write(f"**Risk Level:** {risk_level}")
+
+            # -----------------------------
+            # DECISION FACTORS
+            # -----------------------------
+
+            st.subheader("🔍 Key Decision Factors")
+
+            factors = decision.get("key_decision_factors", [])
+
+            if factors:
+                for factor in factors:
+                    st.write(f"• {factor}")
+            else:
+                st.write("No decision factors available.")
+
+            # -----------------------------
+            # COMPLIANCE
+            # -----------------------------
+
+            st.subheader(" Compliance")
+
+            action = compliance.get("action_taken", "N/A")
+            notification = compliance.get("notification_sent", False)
+            case_id = compliance.get("case_id", "N/A")
+
+            st.write(f"**Action:** {action}")
+            st.write(
+                f"**Notification Sent:** "
+                f"{' Yes' if notification else '❌ No'}"
+            )
+            st.write(f"**Case ID:** {case_id}")
+
+            # -----------------------------
+            # RAW RESPONSE
+            # -----------------------------
+
+            with st.expander(" View Complete API Response"):
+                st.json(result)
 
         else:
             st.error(
