@@ -36,3 +36,11 @@ class LoanDecisionResult(BaseModel):
    confidence_level: float
    key_decision_factors: list[str]
    explanation: str
+
+class ComplianceActionResult(BaseModel):
+   compliance_status: str
+   action_taken: str
+   notification_sent: bool
+   case_id: str | None
+   timestamp: str
+   summary: str

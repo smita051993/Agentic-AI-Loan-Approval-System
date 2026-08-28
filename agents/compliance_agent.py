@@ -1,15 +1,16 @@
 import json
-
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
+from models.schemas import ComplianceActionResult
 
 
 async def compliance_agent(state):
     """
     Compliance Agent
 
-    Calls the Compliance MCP Server to check
-    KYC, blacklist and document compliance.
+    Calls the Compliance MCP Server to:
+    1. Check KYC, blacklist and document compliance
+    2. Create action/notification details
     """
 
     application = state["application"]
@@ -20,13 +21,17 @@ async def compliance_agent(state):
     else:
         applicant_id = application.applicant_id
 
+    # --------------------------------------------------
     # Start Compliance MCP Server
+    # --------------------------------------------------
     server_params = StdioServerParameters(
         command="python",
         args=["mcp_server/compliance_server.py"],
     )
 
-    # Connect to MCP server
+    # --------------------------------------------------
+    # Connect to MCP Server
+    # --------------------------------------------------
     async with stdio_client(server_params) as (read, write):
 
         async with ClientSession(read, write) as session:
@@ -34,7 +39,9 @@ async def compliance_agent(state):
             # Initialize MCP session
             await session.initialize()
 
-            # Call MCP compliance tool
+            # --------------------------------------------------
+            # 1. Check Compliance
+            # --------------------------------------------------
             result = await session.call_tool(
                 "check_compliance",
                 arguments={
@@ -42,42 +49,72 @@ async def compliance_agent(state):
                 },
             )
 
-    # Extract MCP response
-    mcp_text = result.content[0].text
-    compliance_check = json.loads(mcp_text)
+            # Extract MCP response
+            mcp_text = result.content[0].text
+            compliance_check = json.loads(mcp_text)
 
-    # Handle applicant not found
-    if "error" in compliance_check:
-        return {
-            "compliance_result": compliance_check
-        }
+            # Applicant compliance data not found
+            if "error" in compliance_check:
+                raise ValueError(compliance_check["error"])
 
-        # Check compliance
-    is_compliant = (
-        compliance_check["kyc_verified"]
-        and not compliance_check["blacklisted"]
-        and compliance_check["documents_complete"]
+            # --------------------------------------------------
+            # 2. Evaluate Compliance
+            # --------------------------------------------------
+            is_compliant = (
+                compliance_check["kyc_verified"]
+                and not compliance_check["blacklisted"]
+                and compliance_check["documents_complete"]
+            )
+
+            if is_compliant:
+                compliance_status = "PASS"
+                action_taken = "NO_ACTION"
+                summary = "Application passed compliance checks."
+            else:
+                compliance_status = "FAIL"
+                action_taken = "MANUAL_REVIEW"
+                summary = (
+                    "Application requires manual review "
+                    "due to compliance checks."
+                )
+
+            # --------------------------------------------------
+            # 3. Call Notification/Action MCP Tool
+            # --------------------------------------------------
+            notification_result = await session.call_tool(
+                "send_notification",
+                arguments={
+                    "applicant_id": applicant_id,
+                    "compliance_status": compliance_status,
+                    "action_taken": action_taken,
+                    "summary": summary
+                },
+            )
+
+            # Extract notification/action response
+            notification_text = notification_result.content[0].text
+            notification_data = json.loads(notification_text)
+
+    # --------------------------------------------------
+    # 4. Create final ComplianceActionResult
+    # --------------------------------------------------
+    compliance_result = ComplianceActionResult(
+            compliance_status=compliance_status,
+            action_taken=notification_data["action_taken"],
+            notification_sent=notification_data["notification_sent"],
+            case_id=notification_data["case_id"],
+            timestamp=notification_data["timestamp"],
+            summary=notification_data["summary"]
     )
-    if is_compliant:
-        action_taken = "NO_ACTION"
-        notification_sent = False
-        case_id = None
-    else:
-        action_taken = "MANUAL_REVIEW"
-        notification_sent = True
-        case_id = f"CASE-{applicant_id}"
-
-    compliance_result = {
-        "compliance_check": compliance_check,
-        "compliance_status": "PASS" if is_compliant else "FAIL",
-        "action_taken": action_taken,
-        "notification_sent": notification_sent,
-        "case_id": case_id
-    }
-
+    # --------------------------------------------------
+    # 5. Logging
+    # --------------------------------------------------
     print("\n[Compliance Agent] Completed")
     print("Compliance Result:", compliance_result)
 
+    # --------------------------------------------------
+    # 6. Return to LangGraph
+    # --------------------------------------------------
     return {
         "compliance_result": compliance_result
     }
