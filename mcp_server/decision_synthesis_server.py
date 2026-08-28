@@ -5,12 +5,26 @@ mcp = MCPServer("DecisionSynthesis")
 
 @mcp.tool()
 def make_loan_decision(
-    risk_score: int,
-    credit_score: int
+   risk_score: int,
+   credit_score: int,
+   compliance_ok: bool
 ) -> dict:
-    """Synthesize the final loan decision."""
+   """Synthesize the final loan decision."""
+   if not compliance_ok:
+       return {
+           "classification": "REVIEW",
+           "risk_score": risk_score,
+           "confidence_level": 0.95,
+           "key_decision_factors": [
+               "Compliance checks failed"
+           ],
+           "explanation": (
+               "Application requires manual review because "
+               "compliance checks were not passed."
+           )
+       }
 
-    if risk_score >= 70:
+   if risk_score >= 70:
         return {
             "classification": "REJECT",
             "risk_score": risk_score,
@@ -21,7 +35,7 @@ def make_loan_decision(
             "explanation": "Application has a high financial risk score."
         }
 
-    if credit_score < 650:
+   if credit_score < 650:
         return {
             "classification": "REVIEW",
             "risk_score": risk_score,
@@ -32,7 +46,7 @@ def make_loan_decision(
             "explanation": "Credit score is below the required threshold."
         }
 
-    return {
+   return {
         "classification": "APPROVE",
         "risk_score": risk_score,
         "confidence_level": 0.90,

@@ -63,15 +63,8 @@ async def make_loan_decision(
 
     risk_score = int(financial_risk_data["risk_score"])
 
-    compliance_check = compliance_data.get(
-        "compliance_check",
-        compliance_data
-    )
-
     compliance_ok = (
-        compliance_check.get("kyc_verified", False)
-        and not compliance_check.get("blacklisted", True)
-        and compliance_check.get("documents_complete", False)
+            compliance_data.get("compliance_status") == "PASS"
     )
 
     # -------------------------------------------------
