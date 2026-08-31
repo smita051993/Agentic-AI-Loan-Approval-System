@@ -1,55 +1,69 @@
 from orchestration.graph import loan_graph
 from orchestration.state import LoanState
 
+
 def main():
-   # -----------------------------
-   # Sample Loan Application
-   # -----------------------------
-   application = {
-       "applicant_id": "AP001",
-       "age": 32,
-       "income": 80000,
-       "employment_type": "Salaried",
-       "credit_score": 780,
-       "loan_amount": 2000000,
-       "loan_tenure": 10,
-       "existing_liabilities": 10000,
-       "location": "Bangalore"
-   }
-   # -----------------------------
-   # Initial LangGraph State
-   # -----------------------------
-   initial_state: LoanState = {
-       "application": application
-   }
-   # -----------------------------
-   # Run Workflow
-   # -----------------------------
-   result = loan_graph.invoke(initial_state)
-   # -----------------------------
-   # Display Results
-   # -----------------------------
-   print("\n==============================")
-   print("       LOAN DECISION")
-   print("==============================")
-   print("\nApplicant Profile:")
-   print(result.get("applicant_profile"))
-   print("\nFinancial Risk:")
-   print(result.get("financial_risk"))
-   print("\nFinal Decision:")
-   print(result.get("decision"))
+    # -----------------------------
+    # Sample Loan Application
+    # -----------------------------
+    application = {
+        "applicant_id": "AP001",
+        "name": "John Doe",
+        "age": 32,
+        "annual_income": 80000,
+        "employment_type": "Salaried",
+        "credit_score": 780,
+        "loan_amount": 2000000,
+        "loan_term": 10,
+        "existing_liabilities": 10000,
+        "location": "Bangalore",
+    }
 
-   print("\n==============================")
+    # -----------------------------
+    # Initial LangGraph State
+    # -----------------------------
+    initial_state: LoanState = {
+        "application": application
+    }
 
-   print("COMPLIANCE & ACTION")
+    # -----------------------------
+    # Run Workflow
+    # -----------------------------
+    result = loan_graph.invoke(initial_state)
 
-   print("==============================")
-   print("Action Taken      :", result["compliance_result"]["action_taken"])
-   print("Notification Sent :", result["compliance_result"]["notification_sent"])
-   print("Case ID            :", result["compliance_result"]["case_id"])
-   print("Timestamp          :", result["compliance_result"]["timestamp"])
-   print("Summary            :", result["compliance_result"]["summary"])
- 
-   
+    # -----------------------------
+    # Display Results
+    # -----------------------------
+    print("\n==============================")
+    print("       LOAN DECISION")
+    print("==============================")
+
+    print("\nApplicant Profile:")
+    print(result.get("applicant_profile"))
+
+    print("\nFinancial Risk:")
+    print(result.get("financial_risk"))
+
+    print("\nFinal Decision:")
+    print(result.get("decision"))
+
+    # -----------------------------
+    # Compliance & Action
+    # -----------------------------
+    print("\n==============================")
+    print("     COMPLIANCE & ACTION")
+    print("==============================")
+
+    compliance = result.get("compliance_result", {})
+
+    print("Action Taken      :", compliance.get("action_taken"))
+    print("Notification Sent :", compliance.get("notification_sent"))
+    print("Case ID            :", compliance.get("case_id"))
+    print("Timestamp          :", compliance.get("timestamp"))
+    print("Summary            :", compliance.get("summary"))
+
+    print("\n==============================")
+
+
 if __name__ == "__main__":
-   main()
+    main()
