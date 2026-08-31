@@ -1,88 +1,58 @@
 import asyncio
 from orchestration.graph import loan_graph
-
-# application = {
-#    "name": "Low Risk Applicant",
-#    "age": 35,
-#    "annual_income": 100000,
-#    "credit_score": 720,
-#    "loan_amount": 20000,
-#    "employment_status": "employed"
-# }
-# application = {
-#    "name": "Medium Risk Applicant",
-#    "age": 35,
-#    "annual_income": 45000,
-#    "credit_score": 680,
-#    "loan_amount": 30000,
-#    "employment_status": "employed"
-# }
-application = {
-   "applicant_id": "AP002",
-   "name": "High Risk Applicant",
-   "age": 35,
-   "annual_income": 30000,
-   "credit_score": 550,
-   "loan_amount": 100000,
-   "employment_status": "contract",
-   "debt_obligations": 0
-}
-# application = {
-#    "name": "Approved Applicant",
-#    "age": 35,
-#    "annual_income": 85000,
-#    "credit_score": 720,
-#    "loan_amount": 15000,
-#    "employment_status": "employed"
-# }
-# application = {
-#    "applicant_id": "APP001",
-#    "name": "John Doe",
-#    "age": 35,
-#    "income": 85000,
-#    "credit_score": 720,
-#    "employment_type": "PERMANENT",
-#    "loan_amount": 30000,
-#    "debt_obligations": 5000
-# }
-
-
-
 async def main():
-   result = await loan_graph.ainvoke({
-       "application": application
-   })
-#    print("\nApplicant Profile:")
-#    print(result["applicant_profile"])
-#    print("\nFinancial Risk:")
-#    print(result["financial_risk"])
-#    print("\nDecision:")
-#    print(result["decision"])
-#    print("\nCompliance:")
-#    print(result["compliance_result"])
-
-#    result = await loan_graph.ainvoke({
-#     "application": application
-# })
-
-   print("\n==============================")
-   print("FINAL LOAN APPROVAL RESULT")
-   print("==============================")
-
-   print("\nApplicant Profile:")
-   print(result["applicant_profile"])
-
-   print("\nFinancial Risk:")
-   print(result["financial_risk"])
-
-   print("\nCompliance:")
-   print(result["compliance_result"])
-
-
-   print("\nLoan Decision:")
-   print(result["decision"])
-
-
-   print("\n==============================")
-
-asyncio.run(main())
+    # -----------------------------
+    # Sample Loan Application
+    # -----------------------------
+    application = {
+        "applicant_id": "AP002",
+        "name": "High Risk Applicant",
+        "age": 35,
+        "annual_income": 30000,
+        "credit_score": 550,
+        "loan_amount": 100000,
+        "loan_term": 10,
+        "employment_type": "Contract",
+        "existing_liabilities": 0,
+        "location": "Bangalore",
+    }
+    # -----------------------------
+    # Run LangGraph Workflow
+    # -----------------------------
+    result = await loan_graph.ainvoke({
+        "application": application
+    })
+    # -----------------------------
+    # Validate Workflow Results
+    # -----------------------------
+    assert result.get("applicant_profile") is not None, (
+        "Applicant Profile Agent did not return a result"
+    )
+    assert result.get("financial_risk") is not None, (
+        "Financial Risk Agent did not return a result"
+    )
+    assert result.get("compliance_result") is not None, (
+        "Compliance Agent did not return a result"
+    )
+    assert result.get("decision") is not None, (
+        "Decision Agent did not return a result"
+    )
+    # -----------------------------
+    # Display Results
+    # -----------------------------
+    print("\n==============================")
+    print("FINAL LOAN APPROVAL RESULT")
+    print("==============================")
+    print("\nApplicant Profile:")
+    print(result["applicant_profile"])
+    print("\nFinancial Risk:")
+    print(result["financial_risk"])
+    print("\nCompliance:")
+    print(result["compliance_result"])
+    print("\nLoan Decision:")
+    print(result["decision"])
+    print("\n==============================")
+    print("LangGraph workflow test passed!")
+    print("==============================")
+if __name__ == "__main__":
+    asyncio.run(main())
